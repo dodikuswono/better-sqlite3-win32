@@ -18,7 +18,7 @@ jobs:
           node-version: 14
       - run: npm install --ignore-scripts
       - run: choco install nasm
-      - run: npx --no-install prebuild -r node -t 18.0.0 --include-regex 'better_sqlite3.node$' --arch ia32 -u ${{ secrets.GITHUB_TOKEN }}  --output dist
+      - run: npx --no-install prebuild -r node -t 18.3.0 --include-regex 'better_sqlite3.node$' --arch ia32 -u ${{ secrets.GITHUB_TOKEN }}  --output dist
 
       - uses: actions/upload-artifact@v2
         with:
