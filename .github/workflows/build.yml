@@ -1,30 +1,26 @@
 name: build
 
 on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
-  release:
-    types:
-      - released
-  workflow_dispatch: {}
+  workflow_dispatch:
 
 jobs:
   prebuild:
     strategy:
       matrix:
-        os:
-          - windows-2019
+        target-node: [18]
         target-arch: [x86]
-    name: Prebuild on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+    name: Prebuild on Windows x86
+    runs-on: windows-2019
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v1
         with:
-          node-version: 16
+          node-version: 14
       - run: npm install --ignore-scripts
-      - run: npx --no-install prebuild -r node -t 18.0.0 --include-regex 'better_sqlite3.node$' -u ${{ secrets.GITHUB_TOKEN }}
+      - run: choco install nasm
+      - run: npx --no-install prebuild -r node -t 18.0.0 --include-regex 'better_sqlite3.node$' --arch ia32 -u ${{ secrets.GITHUB_TOKEN }}  --output dist
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: node${{ matrix.target-node }}-windows-${{ matrix.target-arch }}
+          path: dist\\*
