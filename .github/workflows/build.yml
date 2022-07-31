@@ -13,44 +13,12 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  test:
-    strategy:
-      matrix:
-        os:
-          - windows-2019
-        node:
-          - 18
-    name: Testing Node ${{ matrix.node }} on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: ${{ matrix.node }}
-      - run: npm install --ignore-scripts
-      - run: npm run build-debug
-      - run: npm test
-
-  publish:
-    if: ${{ github.event_name == 'release' }}
-    name: Publishing to NPM
-    runs-on: ubuntu-18.04
-    needs: test
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: 16
-          registry-url: https://registry.npmjs.org
-      - run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
   prebuild:
     strategy:
       matrix:
         os:
           - windows-2019
+        target-arch: [x86]
     name: Prebuild on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     steps:
@@ -59,4 +27,4 @@ jobs:
         with:
           node-version: 16
       - run: npm install --ignore-scripts
-      - run: npx --no-install prebuild -r node -t 18.0.0 --include-regex 'better_sqlite3.node$' --arch ia32 -u ${{ secrets.GITHUB_TOKEN }}
+      - run: npx --no-install prebuild -r node -t 18.0.0 --include-regex 'better_sqlite3.node$' -u ${{ secrets.GITHUB_TOKEN }}
